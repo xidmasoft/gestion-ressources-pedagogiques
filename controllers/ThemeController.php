@@ -6,6 +6,15 @@ class ThemeController {
     private $model;
 
     public function __construct() {
-        $this->model = new Theme();
+        try {
+            $this->model = new Theme();
+        } catch (\PDOException $e) {
+            $this->model = null;
+        }
+    }
+
+    public function index() {
+        $pageTitle = 'Thèmes';
+        require_once __DIR__ . '/../views/themes/index.php';
     }
 }

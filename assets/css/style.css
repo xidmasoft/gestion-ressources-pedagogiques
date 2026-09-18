@@ -1,0 +1,40 @@
+/* assets/css/style.css */
+
+/* Personnalisation légère pour un aspect professionnel et éducatif */
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #34495e;
+}
+
+.bg-primary {
+    background-color: var(--primary-color) !important;
+}
+
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.navbar-brand {
+    letter-spacing: 0.5px;
+}
+
+.nav-link.active {
+    border-bottom: 2px solid white;
+}
+
+/* Eviter l'accumulation de cartes (ombres très légères) */
+.card {
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    border-radius: 8px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: var(--secondary-color);
+}

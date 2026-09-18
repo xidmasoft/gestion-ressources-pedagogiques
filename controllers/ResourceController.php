@@ -6,6 +6,15 @@ class ResourceController {
     private $model;
 
     public function __construct() {
-        $this->model = new Resource();
+        try {
+            $this->model = new Resource();
+        } catch (\PDOException $e) {
+            $this->model = null;
+        }
+    }
+
+    public function index() {
+        $pageTitle = 'Ressources';
+        require_once __DIR__ . '/../views/resources/index.php';
     }
 }
