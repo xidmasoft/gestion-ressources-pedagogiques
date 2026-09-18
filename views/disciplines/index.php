@@ -47,6 +47,7 @@
                                 <td class="align-middle text-end">
                                     <a href="/index.php?page=disciplines&action=edit&id=<?= $d['id'] ?>" class="btn btn-sm btn-outline-secondary mb-1 mb-md-0">Modifier</a>
                                     <form action="/index.php?page=disciplines&action=delete" method="POST" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette discipline ? Cette action est irréversible.');">
+                                        <?= csrf_field() ?>
                                         <input type="hidden" name="id" value="<?= $d['id'] ?>">
                                         <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
                                     </form>

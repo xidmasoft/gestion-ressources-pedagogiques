@@ -31,10 +31,14 @@ class DisciplineController {
         $description = '';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!verify_csrf()) {
+                $errors[] = "Jeton de sécurité invalide ou expiré.";
+            }
+
             $name = trim($_POST['name'] ?? '');
             $description = trim($_POST['description'] ?? '');
 
-            if (empty($name)) {
+            if (empty($errors) && empty($name)) {
                 $errors[] = "Le nom de la discipline est obligatoire.";
             } elseif ($this->model->nameExists($name)) {
                 $errors[] = "Une discipline portant ce nom existe déjà.";
@@ -75,13 +79,19 @@ class DisciplineController {
         $description = $discipline['description'];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (!verify_csrf()) {
+                $errors[] = "Jeton de sécurité invalide ou expiré.";
+            }
+
             $name = trim($_POST['name'] ?? '');
             $description = trim($_POST['description'] ?? '');
 
-            if (empty($name)) {
-                $errors[] = "Le nom de la discipline est obligatoire.";
-            } elseif ($this->model->nameExists($name, $id)) {
-                $errors[] = "Une autre discipline portant ce nom existe déjà.";
+            if (empty($errors)) {
+                if (empty($name)) {
+                    $errors[] = "Le nom de la discipline est obligatoire.";
+                } elseif ($this->model->nameExists($name, $id)) {
+                    $errors[] = "Une autre discipline portant ce nom existe déjà.";
+                }
             }
 
             if (empty($errors)) {
@@ -101,16 +111,24 @@ class DisciplineController {
 
     public function delete() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-            if ($id) {
-                try {
-                    $discipline = $this->model->getById($id);
-                    if ($discipline) {
-                        $this->model->delete($id);
-                        $_SESSION['success'] = "La discipline a été supprimée avec succès.";
+            if (!verify_csrf()) {
+                $_SESSION['error'] = "Jeton de sécurité invalide ou expiré.";
+            } else {
+                $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+                if ($id) {
+                    try {
+                        $discipline = $this->model->getById($id);
+                        if ($discipline) {
+                            $this->model->delete($id);
+                            $_SESSION['success'] = "La discipline a été supprimée avec succès.";
+                        }
+                    } catch (\PDOException $e) {
+                        if ($e->getCode() == 23000) {
+                            $_SESSION['error'] = "Suppression impossible : cette discipline contient des thèmes. Veuillez d'abord supprimer ou déplacer ses thèmes.";
+                        } else {
+                            $_SESSION['error'] = "Erreur lors de la suppression dans la base de données.";
+                        }
                     }
-                } catch (\PDOException $e) {
-                    $_SESSION['error'] = "Erreur lors de la suppression. Des thèmes sont peut-être encore liés à cette discipline.";
                 }
             }
         }

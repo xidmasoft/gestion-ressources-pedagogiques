@@ -18,6 +18,7 @@
 <div class="card">
     <div class="card-body">
         <form action="/index.php?page=disciplines&action=create" method="POST">
+            <?= csrf_field() ?>
             <div class="mb-3">
                 <label for="name" class="form-label">Nom de la discipline <span class="text-danger">*</span></label>
                 <input type="text" class="form-control" id="name" name="name" value="<?= h($name ?? '') ?>" required>

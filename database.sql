@@ -2,7 +2,7 @@
 
 -- Création de la table disciplines
 CREATE TABLE IF NOT EXISTS disciplines (
-    id INT AUTOINCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -10,17 +10,17 @@ CREATE TABLE IF NOT EXISTS disciplines (
 
 -- Création de la table themes
 CREATE TABLE IF NOT EXISTS themes (
-    id INT AUTOINCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     discipline_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_themes_disciplines FOREIGN KEY (discipline_id) REFERENCES disciplines(id) ON DELETE CASCADE
+    CONSTRAINT fk_themes_disciplines FOREIGN KEY (discipline_id) REFERENCES disciplines(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Création de la table resources
 CREATE TABLE IF NOT EXISTS resources (
-    id INT AUTOINCREMENT PRIMARY KEY,
+    id INT AUTO_INCREMENT PRIMARY KEY,
     theme_id INT NOT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT,
@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS resources (
     file_type VARCHAR(255) NOT NULL,
     file_size INT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_resources_themes FOREIGN KEY (theme_id) REFERENCES themes(id) ON DELETE CASCADE
+    CONSTRAINT fk_resources_themes FOREIGN KEY (theme_id) REFERENCES themes(id) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Création d'index pour optimiser les recherches

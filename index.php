@@ -6,6 +6,11 @@ require_once 'config/database.php';
 
 session_start();
 
+// Génération du token CSRF s'il n'existe pas
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+
 // Inclusions des contrôleurs
 require_once 'controllers/DashboardController.php';
 require_once 'controllers/DisciplineController.php';
