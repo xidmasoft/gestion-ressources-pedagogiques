@@ -4,6 +4,8 @@
 require_once 'core/helpers.php';
 require_once 'config/database.php';
 
+session_start();
+
 // Inclusions des contrôleurs
 require_once 'controllers/DashboardController.php';
 require_once 'controllers/DisciplineController.php';
@@ -20,7 +22,16 @@ switch ($page) {
         break;
     case 'disciplines':
         $controller = new DisciplineController();
-        $controller->index();
+        $action = $_GET['action'] ?? 'index';
+        if ($action === 'create') {
+            $controller->create();
+        } elseif ($action === 'edit') {
+            $controller->edit();
+        } elseif ($action === 'delete') {
+            $controller->delete();
+        } else {
+            $controller->index();
+        }
         break;
     case 'themes':
         $controller = new ThemeController();

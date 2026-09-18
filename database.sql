@@ -2,7 +2,7 @@
 
 -- Création de la table disciplines
 CREATE TABLE IF NOT EXISTS disciplines (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTOINCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS disciplines (
 
 -- Création de la table themes
 CREATE TABLE IF NOT EXISTS themes (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTOINCREMENT PRIMARY KEY,
     discipline_id INT NOT NULL,
     name VARCHAR(255) NOT NULL,
     description TEXT,
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS themes (
 
 -- Création de la table resources
 CREATE TABLE IF NOT EXISTS resources (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    id INT AUTOINCREMENT PRIMARY KEY,
     theme_id INT NOT NULL,
     title VARCHAR(255) NOT NULL,
     description TEXT,
