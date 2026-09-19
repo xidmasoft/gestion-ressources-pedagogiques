@@ -40,7 +40,16 @@ switch ($page) {
         break;
     case 'themes':
         $controller = new ThemeController();
-        $controller->index();
+        $action = $_GET['action'] ?? 'index';
+        if ($action === 'create') {
+            $controller->create();
+        } elseif ($action === 'edit') {
+            $controller->edit();
+        } elseif ($action === 'delete') {
+            $controller->delete();
+        } else {
+            $controller->index();
+        }
         break;
     case 'resources':
         $controller = new ResourceController();
