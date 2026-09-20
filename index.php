@@ -53,7 +53,18 @@ switch ($page) {
         break;
     case 'resources':
         $controller = new ResourceController();
-        $controller->index();
+        $action = $_GET['action'] ?? 'index';
+        if ($action === 'create') {
+            $controller->create();
+        } elseif ($action === 'edit') {
+            $controller->edit();
+        } elseif ($action === 'delete') {
+            $controller->delete();
+        } elseif ($action === 'download') {
+            $controller->download();
+        } else {
+            $controller->index();
+        }
         break;
     default:
         http_response_code(404);
