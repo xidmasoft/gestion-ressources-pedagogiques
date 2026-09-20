@@ -2,10 +2,12 @@
 // controllers/ResourceController.php
 require_once __DIR__ . '/../models/Resource.php';
 require_once __DIR__ . '/../models/Theme.php';
+require_once __DIR__ . '/../models/Discipline.php';
 
 class ResourceController {
     private $model;
     private $themeModel;
+    private $disciplineModel;
 
     // Allowed MIME types and extensions
     private $allowedMimes = [
@@ -26,19 +28,39 @@ class ResourceController {
         try {
             $this->model = new Resource();
             $this->themeModel = new Theme();
+            $this->disciplineModel = new Discipline();
         } catch (\PDOException $e) {
             $this->model = null;
             $this->themeModel = null;
+            $this->disciplineModel = null;
         }
     }
 
     public function index() {
         $pageTitle = 'Ressources';
+
+        $q = trim($_GET['q'] ?? '');
+        $disciplineId = filter_input(INPUT_GET, 'discipline_id', FILTER_VALIDATE_INT);
+        $themeId = filter_input(INPUT_GET, 'theme_id', FILTER_VALIDATE_INT);
+
         if ($this->model) {
-            $resources = $this->model->getAllWithDetails();
+            // Coherence check
+            if ($disciplineId && $themeId) {
+                $theme = $this->themeModel->getById($themeId);
+                if ($theme && $theme['discipline_id'] != $disciplineId) {
+                    $themeId = null; // Ignore theme if it doesn't belong to the selected discipline
+                }
+            }
+
+            $resources = $this->model->search($q, $disciplineId, $themeId);
+            $disciplines = $this->disciplineModel->getAll();
+            $themes = $this->themeModel->getAllWithDiscipline();
         } else {
             $resources = [];
+            $disciplines = [];
+            $themes = [];
         }
+
         require_once __DIR__ . '/../views/resources/index.php';
     }
 

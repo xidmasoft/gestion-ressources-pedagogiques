@@ -19,6 +19,40 @@ class Resource {
         return $stmt->fetchAll();
     }
 
+    public function search($query, $disciplineId, $themeId) {
+        $sql = "SELECT r.*, t.name as theme_name, d.name as discipline_name
+                FROM resources r
+                JOIN themes t ON r.theme_id = t.id
+                JOIN disciplines d ON t.discipline_id = d.id
+                WHERE 1=1";
+
+        $params = [];
+
+        if (!empty($query)) {
+            $sql .= " AND (r.title LIKE :query
+                        OR r.description LIKE :query
+                        OR t.name LIKE :query
+                        OR d.name LIKE :query)";
+            $params['query'] = '%' . $query . '%';
+        }
+
+        if (!empty($disciplineId)) {
+            $sql .= " AND d.id = :discipline_id";
+            $params['discipline_id'] = $disciplineId;
+        }
+
+        if (!empty($themeId)) {
+            $sql .= " AND t.id = :theme_id";
+            $params['theme_id'] = $themeId;
+        }
+
+        $sql .= " ORDER BY d.name ASC, t.name ASC, r.title ASC";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
+    }
+
     public function getById($id) {
         $stmt = $this->pdo->prepare("SELECT * FROM resources WHERE id = :id");
         $stmt->execute(['id' => $id]);

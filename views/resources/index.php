@@ -21,6 +21,66 @@
     <?php unset($_SESSION['error']); ?>
 <?php endif; ?>
 
+<div class="card mb-4">
+    <div class="card-body bg-light">
+        <form action="/index.php" method="GET" class="row g-3 align-items-end">
+            <input type="hidden" name="page" value="resources">
+
+            <div class="col-12 col-md-4">
+                <label for="q" class="form-label">Recherche textuelle</label>
+                <input type="text" class="form-control" id="q" name="q" value="<?= h($q ?? '') ?>" placeholder="Titre, description...">
+            </div>
+
+            <div class="col-12 col-md-3">
+                <label for="discipline_id" class="form-label">Discipline</label>
+                <select class="form-select" id="discipline_id" name="discipline_id">
+                    <option value="">-- Toutes --</option>
+                    <?php if (!empty($disciplines)): ?>
+                        <?php foreach ($disciplines as $d): ?>
+                            <option value="<?= $d['id'] ?>" <?= (isset($disciplineId) && $disciplineId == $d['id']) ? 'selected' : '' ?>>
+                                <?= h($d['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </select>
+            </div>
+
+            <div class="col-12 col-md-3">
+                <label for="theme_id" class="form-label">Thème</label>
+                <select class="form-select" id="theme_id" name="theme_id">
+                    <option value="">-- Tous --</option>
+                    <?php if (!empty($themes)): ?>
+                        <?php
+                        $currentDiscipline = null;
+                        foreach ($themes as $t):
+                            if (isset($disciplineId) && $disciplineId && $t['discipline_id'] != $disciplineId) continue;
+                            if ($currentDiscipline !== $t['discipline_name']):
+                                if ($currentDiscipline !== null) echo '</optgroup>';
+                                $currentDiscipline = $t['discipline_name'];
+                                echo '<optgroup label="' . h($currentDiscipline) . '">';
+                            endif;
+                        ?>
+                            <option value="<?= $t['id'] ?>" <?= (isset($themeId) && $themeId == $t['id']) ? 'selected' : '' ?>>
+                                <?= h($t['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                        <?php if ($currentDiscipline !== null) echo '</optgroup>'; ?>
+                    <?php endif; ?>
+                </select>
+            </div>
+
+            <div class="col-12 col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+                <a href="/index.php?page=resources" class="btn btn-outline-secondary">Réinitialiser</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<p class="text-muted">
+    <?= count($resources) ?> ressource<?= count($resources) > 1 ? 's' : '' ?> trouvée<?= count($resources) > 1 ? 's' : '' ?>
+</p>
+
 <div class="card">
     <div class="card-body p-0">
         <div class="table-responsive">
