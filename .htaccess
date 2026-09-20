@@ -1,0 +1,20 @@
+# Désactiver le Directory Listing globalement
+Options -Indexes
+
+# Bloquer l'accès direct HTTP aux répertoires internes de l'application
+RedirectMatch 404 ^/(controllers|models|config|core|views)(/|$)
+
+# Pour les fichiers individuels s'ils sont appelés directement par leur extension
+<FilesMatch "\.(php|sql)$">
+    # On autorise seulement index.php
+    <If "%{REQUEST_URI} != '/index.php'">
+        Require all denied
+    </If>
+</FilesMatch>
+
+# Assurer que l'accès aux assets est toujours autorisé
+<Directory "assets">
+    Require all granted
+</Directory>
+
+# Assurer que le dossier d'uploads a sa propre protection (déjà géré par uploads/.htaccess)
