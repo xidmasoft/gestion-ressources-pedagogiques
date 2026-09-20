@@ -7,7 +7,7 @@ define('DB_USER', 'root');
 define('DB_PASS', ''); // Placeholder for local dev password
 
 function getDBConnection() {
-    $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+    $dsn = "sqlite:/tmp/test.db";
     $options = [
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -15,7 +15,9 @@ function getDBConnection() {
     ];
 
     try {
-        return new PDO($dsn, DB_USER, DB_PASS, $options);
+        $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+        $pdo->exec('PRAGMA foreign_keys = ON;');
+        return $pdo;
     } catch (\PDOException $e) {
         throw new \PDOException($e->getMessage(), (int)$e->getCode());
     }
