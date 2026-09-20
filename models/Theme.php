@@ -58,4 +58,9 @@ class Theme {
         $stmt = $this->pdo->prepare("DELETE FROM themes WHERE id = :id");
         return $stmt->execute(['id' => $id]);
     }
+
+    public function getTotalCount() {
+        $stmt = $this->pdo->query("SELECT COUNT(*) FROM themes");
+        return (int) $stmt->fetchColumn();
+    }
 }

@@ -52,4 +52,9 @@ class Discipline {
         $stmt = $this->pdo->prepare("DELETE FROM disciplines WHERE id = :id");
         return $stmt->execute(['id' => $id]);
     }
+
+    public function getTotalCount() {
+        $stmt = $this->pdo->query("SELECT COUNT(*) FROM disciplines");
+        return (int) $stmt->fetchColumn();
+    }
 }

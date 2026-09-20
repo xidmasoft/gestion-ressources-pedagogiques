@@ -109,4 +109,49 @@ class Resource {
         $stmt = $this->pdo->prepare("DELETE FROM resources WHERE id = :id");
         return $stmt->execute(['id' => $id]);
     }
+
+    public function getTotalCount() {
+        $stmt = $this->pdo->query("SELECT COUNT(*) FROM resources");
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function getDistributionByDiscipline() {
+        $sql = "SELECT d.name as discipline_name, COUNT(r.id) as count
+                FROM disciplines d
+                LEFT JOIN themes t ON d.id = t.discipline_id
+                LEFT JOIN resources r ON t.id = r.theme_id
+                GROUP BY d.id, d.name
+                ORDER BY count DESC, d.name ASC";
+        $stmt = $this->pdo->query($sql);
+        return $stmt->fetchAll();
+    }
+
+    public function getDistributionByTheme($limit = 10) {
+        $sql = "SELECT t.name as theme_name, d.name as discipline_name, COUNT(r.id) as count
+                FROM themes t
+                JOIN disciplines d ON t.discipline_id = d.id
+                JOIN resources r ON t.id = r.theme_id
+                GROUP BY t.id, t.name, d.name
+                ORDER BY count DESC, t.name ASC
+                LIMIT :limit";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
+    public function getLatest($limit = 5) {
+        $sql = "SELECT r.*, t.name as theme_name, d.name as discipline_name
+                FROM resources r
+                JOIN themes t ON r.theme_id = t.id
+                JOIN disciplines d ON t.discipline_id = d.id
+                ORDER BY r.created_at DESC, r.id DESC
+                LIMIT :limit";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
 }
