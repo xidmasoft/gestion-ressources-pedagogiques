@@ -4,7 +4,11 @@
 require_once 'core/helpers.php';
 require_once 'config/database.php';
 
-session_start();
+session_start([
+    'cookie_httponly' => true,
+    'cookie_samesite' => 'Lax',
+    'use_strict_mode' => true,
+]);
 
 // Génération du token CSRF s'il n'existe pas
 if (empty($_SESSION['csrf_token'])) {
