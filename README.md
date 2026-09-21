@@ -24,3 +24,14 @@ Si vous disposez de PHP CLI, vous pouvez lancer l'application avec le serveur in
 php -S localhost:8000
 ```
 Puis accédez à `http://localhost:8000` depuis votre navigateur.
+
+## Phase 9B: Authentication & Authorization
+This application uses a role-based authorization model ('user' or 'admin') managed locally:
+- **Accounts** must be explicitly created by an administrator. There is no public registration.
+- **Login / Logout**: The application is private. A valid session is required for all actions (Dashboard, Resources). Logout enforces POST requests and CSRF protection.
+- **Security & Password Management**:
+    - Database and PDO handle authentication securely (no plaintext passwords, minimum 12 chars).
+    - Upon login, the session is protected via `session_regenerate_id(true)` to prevent session fixation.
+    - Rate-limiting (brute force mitigation) is implemented server-side.
+- **Resource Ownership (IDOR Prevention)**: A user can only edit or delete a resource they created, verified by `user_id`. Administrators have universal access.
+- **Database Migration**: During deployment, a `users` table is established and `resources.user_id` is applied retroactively to secure existing data to the default Admin account.

@@ -1,6 +1,6 @@
 // assets/js/script.js
 
-$(document).ready(function() {
+document.addEventListener("DOMContentLoaded", function() {
     // Initialisation JS basique
     console.log("Gestionnaire de Ressources Pédagogiques initialisé.");
 });

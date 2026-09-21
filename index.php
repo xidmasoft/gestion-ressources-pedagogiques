@@ -8,7 +8,7 @@ header("X-Content-Type-Options: nosniff");
 header("X-Frame-Options: SAMEORIGIN");
 header("Referrer-Policy: strict-origin-when-cross-origin");
 // CSP autorisant jQuery/Bootstrap et unsafe-inline (souvent utilisé par ces libs pour les styles/events).
-header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://code.jquery.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:;");
+header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:;");
 
 $cookieParams = session_get_cookie_params();
 session_set_cookie_params([
@@ -32,11 +32,34 @@ require_once 'controllers/DashboardController.php';
 require_once 'controllers/DisciplineController.php';
 require_once 'controllers/ThemeController.php';
 require_once 'controllers/ResourceController.php';
+require_once 'controllers/AuthController.php';
+require_once 'controllers/UserController.php';
 
 // Routeur simple
 $page = $_GET['page'] ?? 'dashboard';
 
 switch ($page) {
+    case 'login':
+        $controller = new AuthController();
+        $controller->login();
+        break;
+    case 'logout':
+        $controller = new AuthController();
+        $controller->logout();
+        break;
+    case 'users':
+        $controller = new UserController();
+        $action = $_GET['action'] ?? 'index';
+        if ($action === 'create') {
+            $controller->create();
+        } elseif ($action === 'edit') {
+            $controller->edit();
+        } elseif ($action === 'reset_password') {
+            $controller->resetPassword();
+        } else {
+            $controller->index();
+        }
+        break;
     case 'dashboard':
         $controller = new DashboardController();
         $controller->index();

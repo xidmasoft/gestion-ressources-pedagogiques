@@ -70,10 +70,11 @@ class Resource {
         return $stmt->fetchColumn() > 0;
     }
 
-    public function create($themeId, $title, $description, $filePath, $fileType, $fileSize) {
-        $stmt = $this->pdo->prepare("INSERT INTO resources (theme_id, title, description, file_path, file_type, file_size) VALUES (:theme_id, :title, :description, :file_path, :file_type, :file_size)");
+    public function create($themeId, $userId, $title, $description, $filePath, $fileType, $fileSize) {
+        $stmt = $this->pdo->prepare("INSERT INTO resources (theme_id, user_id, title, description, file_path, file_type, file_size) VALUES (:theme_id, :user_id, :title, :description, :file_path, :file_type, :file_size)");
         return $stmt->execute([
             'theme_id' => $themeId,
+            'user_id' => $userId,
             'title' => $title,
             'description' => $description,
             'file_path' => $filePath,

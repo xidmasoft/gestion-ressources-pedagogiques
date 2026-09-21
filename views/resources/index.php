@@ -117,12 +117,14 @@
                                 <td class="align-middle"><?= date('d/m/Y H:i', strtotime($r['created_at'])) ?></td>
                                 <td class="align-middle text-end">
                                     <a href="/index.php?page=resources&action=download&id=<?= $r['id'] ?>" class="btn btn-sm btn-outline-primary mb-1 mb-md-0" target="_blank">Télécharger</a>
-                                    <a href="/index.php?page=resources&action=edit&id=<?= $r['id'] ?>" class="btn btn-sm btn-outline-secondary mb-1 mb-md-0">Modifier</a>
-                                    <form action="/index.php?page=resources&action=delete" method="POST" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette ressource ? Le fichier sera définitivement supprimé.');">
-                                        <?= csrf_field() ?>
-                                        <input type="hidden" name="id" value="<?= $r['id'] ?>">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
-                                    </form>
+                                    <?php if ($r['user_id'] == Auth::id() || Auth::isAdmin()): ?>
+                                        <a href="/index.php?page=resources&action=edit&id=<?= $r['id'] ?>" class="btn btn-sm btn-outline-secondary mb-1 mb-md-0">Modifier</a>
+                                        <form action="/index.php?page=resources&action=delete" method="POST" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette ressource ? Le fichier sera définitivement supprimé.');">
+                                            <?= csrf_field() ?>
+                                            <input type="hidden" name="id" value="<?= $r['id'] ?>">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Supprimer</button>
+                                        </form>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

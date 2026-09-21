@@ -2,12 +2,14 @@
 // controllers/ThemeController.php
 require_once __DIR__ . '/../models/Theme.php';
 require_once __DIR__ . '/../models/Discipline.php';
+require_once __DIR__ . '/../core/Auth.php';
 
 class ThemeController {
     private $model;
     private $disciplineModel;
 
     public function __construct() {
+        Auth::requireAdmin();
         try {
             $this->model = new Theme();
             $this->disciplineModel = new Discipline();

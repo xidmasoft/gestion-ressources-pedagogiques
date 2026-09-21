@@ -3,9 +3,11 @@
 require_once __DIR__ . '/../models/Discipline.php';
 require_once __DIR__ . '/../models/Theme.php';
 require_once __DIR__ . '/../models/Resource.php';
+require_once __DIR__ . '/../core/Auth.php';
 
 class DashboardController {
     public function index() {
+        Auth::requireLogin();
         $pageTitle = 'Tableau de Bord';
 
         $disciplineModel = new Discipline();

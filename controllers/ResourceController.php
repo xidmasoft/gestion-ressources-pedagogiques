@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../models/Resource.php';
 require_once __DIR__ . '/../models/Theme.php';
 require_once __DIR__ . '/../models/Discipline.php';
+require_once __DIR__ . '/../core/Auth.php';
 
 class ResourceController {
     private $model;
@@ -25,6 +26,7 @@ class ResourceController {
     private $maxFileSize = 10485760; // 10 MB
 
     public function __construct() {
+        Auth::requireLogin();
         try {
             $this->model = new Resource();
             $this->themeModel = new Theme();
@@ -157,7 +159,7 @@ class ResourceController {
                     $fileData = $this->handleUpload($_FILES['file'], $errors);
                     if ($fileData && empty($errors)) {
                         try {
-                            $this->model->create($themeId, $title, $description, $fileData['path'], $fileData['mime'], $fileData['size']);
+                            $this->model->create($themeId, Auth::id(), $title, $description, $fileData['path'], $fileData['mime'], $fileData['size']);
                             $_SESSION['success'] = "La ressource a été ajoutée avec succès.";
                             header("Location: /index.php?page=resources");
                             exit;
@@ -188,6 +190,11 @@ class ResourceController {
         if (!$resource) {
             header("Location: /index.php?page=resources");
             exit;
+        }
+
+        if ($resource['user_id'] != Auth::id() && !Auth::isAdmin()) {
+            http_response_code(403);
+            die("Vous n'êtes pas autorisé à modifier cette ressource.");
         }
 
         $themes = $this->themeModel ? $this->themeModel->getAllWithDiscipline() : [];
@@ -266,6 +273,10 @@ class ResourceController {
                     try {
                         $resource = $this->model->getById($id);
                         if ($resource) {
+                            if ($resource['user_id'] != Auth::id() && !Auth::isAdmin()) {
+                                http_response_code(403);
+                                die("Vous n'êtes pas autorisé à supprimer cette ressource.");
+                            }
                             $this->model->delete($id);
                             $filePath = __DIR__ . '/../uploads/' . $resource['file_path'];
                             if (file_exists($filePath)) {
