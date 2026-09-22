@@ -1,0 +1,4 @@
+## 2024-05-18 - Type juggling DoS in PHP 8 security functions
+**Vulnerability:** The `verify_csrf` function passed `$_POST['csrf_token']` directly to `hash_equals()`. In PHP 8+, `hash_equals()` throws a `TypeError` Fatal Error if the second argument is not a string (e.g., an array like `csrf_token[]=1` sent in the POST request). This could lead to a Denial of Service (DoS) and potentially leak path/stack information if error reporting is not properly configured.
+**Learning:** PHP 8's stricter type system means that blindly passing untyped input (like `$_POST` or `$_GET` variables) to native functions can cause fatal errors, whereas older PHP versions might have returned a warning or a boolean false.
+**Prevention:** Always explicitly validate the types of user inputs (e.g., using `is_string()`) before passing them to strict PHP 8+ functions like `hash_equals()` to prevent TypeErrors and potential DoS attacks.
