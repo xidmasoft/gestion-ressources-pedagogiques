@@ -63,9 +63,14 @@
     </div>
 </div>
 
-<p class="text-muted">
-    <?= count($resources) ?> ressource<?= count($resources) > 1 ? 's' : '' ?> trouvée<?= count($resources) > 1 ? 's' : '' ?>
-</p>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <p class="text-muted mb-0">
+        <?= (int)$totalResults ?> ressource<?= $totalResults > 1 ? 's' : '' ?> trouvée<?= $totalResults > 1 ? 's' : '' ?>
+        <?php if ($totalPages > 1): ?>
+            (Page <?= (int)$p ?> sur <?= (int)$totalPages ?>)
+        <?php endif; ?>
+    </p>
+</div>
 
 <div class="card">
     <div class="card-body p-0">
@@ -121,4 +126,53 @@
     </div>
 </div>
 
+
+<?php if (isset($totalPages) && $totalPages > 1): ?>
+    <?php
+    $queryParams = $_GET;
+    unset($queryParams['p']);
+    $queryString = http_build_query($queryParams);
+    $baseLink = "/index.php?" . ($queryString ? $queryString . '&' : '') . "p=";
+    ?>
+    <nav aria-label="Pagination des ressources" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <li class="page-item <?= ($p <= 1) ? 'disabled' : '' ?>">
+                <a class="page-link" href="<?= ($p <= 1) ? '#' : $baseLink . ($p - 1) ?>" aria-label="Précédent">
+                    <span aria-hidden="true">&laquo; Précédent</span>
+                </a>
+            </li>
+
+            <?php
+            $startPage = max(1, $p - 2);
+            $endPage = min($totalPages, $p + 2);
+
+            if ($startPage > 1) {
+                echo '<li class="page-item"><a class="page-link" href="' . $baseLink . '1">1</a></li>';
+                if ($startPage > 2) {
+                    echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                }
+            }
+
+            for ($i = $startPage; $i <= $endPage; $i++): ?>
+                <li class="page-item <?= ($i == $p) ? 'active' : '' ?>">
+                    <a class="page-link" href="<?= $baseLink . $i ?>"><?= $i ?></a>
+                </li>
+            <?php endfor;
+
+            if ($endPage < $totalPages) {
+                if ($endPage < $totalPages - 1) {
+                    echo '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                }
+                echo '<li class="page-item"><a class="page-link" href="' . $baseLink . $totalPages . '">' . $totalPages . '</a></li>';
+            }
+            ?>
+
+            <li class="page-item <?= ($p >= $totalPages) ? 'disabled' : '' ?>">
+                <a class="page-link" href="<?= ($p >= $totalPages) ? '#' : $baseLink . ($p + 1) ?>" aria-label="Suivant">
+                    <span aria-hidden="true">Suivant &raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+<?php endif; ?>
 <?php require_once __DIR__ . '/../layout/footer.php'; ?>

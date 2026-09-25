@@ -82,6 +82,8 @@ class AuthController {
 
         // Si GET ou pas de CSRF, on refuse ou on redirige
         http_response_code(403);
-        die("Déconnexion non autorisée.");
+        http_response_code(403);
+            require_once __DIR__ . '/../views/errors/403.php';
+            exit;
     }
 }

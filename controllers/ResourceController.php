@@ -194,7 +194,9 @@ class ResourceController {
 
         if ($resource['user_id'] != Auth::id() && !Auth::isAdmin()) {
             http_response_code(403);
-            die("Vous n'êtes pas autorisé à modifier cette ressource.");
+            http_response_code(403);
+            require_once __DIR__ . '/../views/errors/403.php';
+            exit;
         }
 
         $themes = $this->themeModel ? $this->themeModel->getAllWithDiscipline() : [];
@@ -275,7 +277,9 @@ class ResourceController {
                         if ($resource) {
                             if ($resource['user_id'] != Auth::id() && !Auth::isAdmin()) {
                                 http_response_code(403);
-                                die("Vous n'êtes pas autorisé à supprimer cette ressource.");
+                                http_response_code(403);
+                                require_once __DIR__ . '/../views/errors/403.php';
+                                exit;
                             }
                             $this->model->delete($id);
                             $filePath = __DIR__ . '/../uploads/' . $resource['file_path'];
@@ -298,13 +302,17 @@ class ResourceController {
         $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
         if (!$id) {
             http_response_code(404);
-            die("Ressource non trouvée.");
+            http_response_code(404);
+            require_once __DIR__ . '/../views/errors/404.php';
+            exit;
         }
 
         $resource = $this->model->getById($id);
         if (!$resource) {
             http_response_code(404);
-            die("Ressource non trouvée.");
+            http_response_code(404);
+            require_once __DIR__ . '/../views/errors/404.php';
+            exit;
         }
 
         // Prevent path traversal
@@ -313,7 +321,9 @@ class ResourceController {
 
         if (!file_exists($filePath)) {
             http_response_code(404);
-            die("Fichier physiquement introuvable.");
+            http_response_code(404);
+            require_once __DIR__ . '/../views/errors/404.php';
+            exit;
         }
 
         $mime = $resource['file_type'];
