@@ -26,15 +26,16 @@ class UserController {
         $errors = [];
         $name = '';
         $email = '';
+        $role = 'user';
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!verify_csrf()) {
                 $errors[] = "Requête invalide ou expirée.";
             } else {
-                $name = trim($_POST['name'] ?? '');
-                $email = trim($_POST['email'] ?? '');
-                $password = $_POST['password'] ?? '';
-                $role = $_POST['role'] ?? 'user';
+                $name = isset($_POST['name']) ? trim($_POST['name']) : $name;
+                $email = isset($_POST['email']) ? trim($_POST['email']) : $email;
+                $password = isset($_POST['password']) ? $_POST['password'] : $password;
+                $role = isset($_POST['role']) ? $_POST['role'] : $role;
 
                 if (empty($name) || empty($email) || empty($password)) {
                     $errors[] = "Tous les champs sont obligatoires.";
@@ -48,7 +49,7 @@ class UserController {
                     $errors[] = "Cet e-mail est déjà utilisé.";
                 } else {
                     if ($this->model && $this->model->create($name, $email, $password, $role)) {
-                        $_SESSION['success'] = "Utilisateur créé avec succès.";
+                        setFlash('success', "Utilisateur créé avec succès.");
                         header("Location: /index.php?page=users");
                         die();
                     } else {
@@ -84,10 +85,10 @@ class UserController {
             if (!verify_csrf()) {
                 $errors[] = "Requête invalide ou expirée.";
             } else {
-                $name = trim($_POST['name'] ?? '');
-                $email = trim($_POST['email'] ?? '');
-                $role = $_POST['role'] ?? 'user';
-                $status = $_POST['status'] ?? 'active';
+                $name = isset($_POST['name']) ? trim($_POST['name']) : $name;
+                $email = isset($_POST['email']) ? trim($_POST['email']) : $email;
+                $role = isset($_POST['role']) ? $_POST['role'] : $role;
+                $status = isset($_POST['status']) ? $_POST['status'] : $status;
 
                 if (empty($name) || empty($email)) {
                     $errors[] = "Le nom et l'e-mail sont obligatoires.";
@@ -114,7 +115,7 @@ class UserController {
 
                     if (empty($errors)) {
                         if ($this->model->update($id, $name, $email, $role) && $this->model->setStatus($id, $status)) {
-                            $_SESSION['success'] = "Utilisateur mis à jour avec succès.";
+                            setFlash('success', "Utilisateur mis à jour avec succès.");
                             header("Location: /index.php?page=users");
                             die();
                         } else {
@@ -130,16 +131,16 @@ class UserController {
     public function resetPassword() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!verify_csrf()) {
-                $_SESSION['error'] = "Requête invalide ou expirée.";
+                setFlash('error', "Requête invalide ou expirée.");
             } else {
                 $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-                $password = $_POST['password'] ?? '';
+                $password = isset($_POST['password']) ? $_POST['password'] : $password;
 
                 if (!$id || strlen($password) < 12) {
-                    $_SESSION['error'] = "Le mot de passe doit contenir au moins 12 caractères.";
+                    setFlash('error', "Le mot de passe doit contenir au moins 12 caractères.");
                 } elseif ($this->model) {
                     $this->model->updatePassword($id, $password);
-                    $_SESSION['success'] = "Mot de passe réinitialisé avec succès.";
+                    setFlash('success', "Mot de passe réinitialisé avec succès.");
                 }
             }
         }

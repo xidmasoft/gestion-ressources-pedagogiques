@@ -27,8 +27,8 @@ class AuthController {
             if (!verify_csrf()) {
                 $errors[] = "Requête invalide ou expirée.";
             } else {
-                $email = trim($_POST['email'] ?? '');
-                $password = $_POST['password'] ?? '';
+                $email = isset($_POST['email']) ? trim($_POST['email']) : $email;
+                $password = isset($_POST['password']) ? $_POST['password'] : $password;
 
                 if (empty($email) || empty($password)) {
                     $errors[] = "Veuillez remplir tous les champs.";

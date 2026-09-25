@@ -39,3 +39,31 @@ function verify_csrf(): bool {
 
     return hash_equals($sessionToken, $postToken);
 }
+
+/**
+ * Définit un message flash.
+ *
+ * @param string $type Le type de message (ex: 'success', 'error').
+ * @param string $message Le message à afficher.
+ */
+function setFlash(string $type, string $message): void {
+    if (!isset($_SESSION['flash'])) {
+        $_SESSION['flash'] = [];
+    }
+    $_SESSION['flash'][$type][] = $message;
+}
+
+/**
+ * Récupère et supprime les messages flash d'un certain type.
+ *
+ * @param string $type Le type de message.
+ * @return array Liste des messages flash du type demandé.
+ */
+function getFlash(string $type): array {
+    if (isset($_SESSION['flash'][$type])) {
+        $messages = $_SESSION['flash'][$type];
+        unset($_SESSION['flash'][$type]);
+        return $messages;
+    }
+    return [];
+}
