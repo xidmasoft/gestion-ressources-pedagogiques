@@ -5,21 +5,7 @@
     <a href="/index.php?page=resources&action=create" class="btn btn-primary btn-sm">Ajouter une ressource</a>
 </div>
 
-<?php if (isset($_SESSION['success'])): ?>
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <?= h($_SESSION['success']) ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <?php unset($_SESSION['success']); ?>
-<?php endif; ?>
 
-<?php if (isset($_SESSION['error'])): ?>
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <?= h($_SESSION['error']) ?>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <?php unset($_SESSION['error']); ?>
-<?php endif; ?>
 
 <div class="card mb-4">
     <div class="card-body bg-light">

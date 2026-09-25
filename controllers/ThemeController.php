@@ -43,9 +43,9 @@ class ThemeController {
                 $errors[] = "Jeton de sécurité invalide ou expiré.";
             }
 
-            $name = trim($_POST['name'] ?? '');
-            $description = trim($_POST['description'] ?? '');
-            $disciplineId = filter_input(INPUT_POST, 'discipline_id', FILTER_VALIDATE_INT);
+            $name = isset($_POST['name']) ? trim($_POST['name']) : $name;
+            $description = isset($_POST['description']) ? trim($_POST['description']) : $description;
+            $disciplineId = filter_input(INPUT_POST, 'discipline_id', FILTER_VALIDATE_INT) ?: $disciplineId;
 
             if (empty($errors)) {
                 if (empty($name)) {
@@ -66,7 +66,7 @@ class ThemeController {
             if (empty($errors)) {
                 try {
                     $this->model->create($disciplineId, $name, $description);
-                    $_SESSION['success'] = "Le thème a été ajouté avec succès.";
+                    setFlash('success', "Le thème a été ajouté avec succès.");
                     header("Location: /index.php?page=themes");
                     exit;
                 } catch (\PDOException $e) {
@@ -104,9 +104,9 @@ class ThemeController {
                 $errors[] = "Jeton de sécurité invalide ou expiré.";
             }
 
-            $name = trim($_POST['name'] ?? '');
-            $description = trim($_POST['description'] ?? '');
-            $disciplineId = filter_input(INPUT_POST, 'discipline_id', FILTER_VALIDATE_INT);
+            $name = isset($_POST['name']) ? trim($_POST['name']) : $name;
+            $description = isset($_POST['description']) ? trim($_POST['description']) : $description;
+            $disciplineId = filter_input(INPUT_POST, 'discipline_id', FILTER_VALIDATE_INT) ?: $disciplineId;
 
             if (empty($errors)) {
                 if (empty($name)) {
@@ -127,7 +127,7 @@ class ThemeController {
             if (empty($errors)) {
                 try {
                     $this->model->update($id, $disciplineId, $name, $description);
-                    $_SESSION['success'] = "Le thème a été modifié avec succès.";
+                    setFlash('success', "Le thème a été modifié avec succès.");
                     header("Location: /index.php?page=themes");
                     exit;
                 } catch (\PDOException $e) {
@@ -142,7 +142,7 @@ class ThemeController {
     public function delete() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!verify_csrf()) {
-                $_SESSION['error'] = "Jeton de sécurité invalide ou expiré.";
+                setFlash('error', "Jeton de sécurité invalide ou expiré.");
             } else {
                 $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
                 if ($id) {
@@ -150,13 +150,13 @@ class ThemeController {
                         $theme = $this->model->getById($id);
                         if ($theme) {
                             $this->model->delete($id);
-                            $_SESSION['success'] = "Le thème a été supprimé avec succès.";
+                            setFlash('success', "Le thème a été supprimé avec succès.");
                         }
                     } catch (\PDOException $e) {
-                        if ($e->getCode() == 23000) {
-                            $_SESSION['error'] = "Suppression impossible : ce thème contient des ressources. Veuillez d'abord les supprimer ou les déplacer.";
+                        if ($e->getCode() == 23000 && isset($e->errorInfo[1]) && $e->errorInfo[1] == 1451) {
+                            setFlash('error', "Impossible de supprimer ce thème : des ressources y sont encore associées.");
                         } else {
-                            $_SESSION['error'] = "Erreur lors de la suppression dans la base de données.";
+                            setFlash('error', "Erreur lors de la suppression dans la base de données.");
                         }
                     }
                 }

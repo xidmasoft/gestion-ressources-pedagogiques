@@ -132,9 +132,9 @@ class ResourceController {
                 $errors[] = "Jeton de sécurité invalide ou expiré.";
             }
 
-            $title = trim($_POST['title'] ?? '');
-            $description = trim($_POST['description'] ?? '');
-            $themeId = filter_input(INPUT_POST, 'theme_id', FILTER_VALIDATE_INT);
+            $title = isset($_POST['title']) ? trim($_POST['title']) : $title;
+            $description = isset($_POST['description']) ? trim($_POST['description']) : $description;
+            $themeId = filter_input(INPUT_POST, 'theme_id', FILTER_VALIDATE_INT) ?: $themeId;
 
             if (empty($errors)) {
                 if (empty($title)) {
@@ -160,7 +160,7 @@ class ResourceController {
                     if ($fileData && empty($errors)) {
                         try {
                             $this->model->create($themeId, Auth::id(), $title, $description, $fileData['path'], $fileData['mime'], $fileData['size']);
-                            $_SESSION['success'] = "La ressource a été ajoutée avec succès.";
+                            setFlash('success', "La ressource a été ajoutée avec succès.");
                             header("Location: /index.php?page=resources");
                             exit;
                         } catch (\PDOException $e) {
@@ -207,9 +207,9 @@ class ResourceController {
                 $errors[] = "Jeton de sécurité invalide ou expiré.";
             }
 
-            $title = trim($_POST['title'] ?? '');
-            $description = trim($_POST['description'] ?? '');
-            $themeId = filter_input(INPUT_POST, 'theme_id', FILTER_VALIDATE_INT);
+            $title = isset($_POST['title']) ? trim($_POST['title']) : $title;
+            $description = isset($_POST['description']) ? trim($_POST['description']) : $description;
+            $themeId = filter_input(INPUT_POST, 'theme_id', FILTER_VALIDATE_INT) ?: $themeId;
 
             if (empty($errors)) {
                 if (empty($title)) {
@@ -247,7 +247,7 @@ class ResourceController {
                         } else {
                             $this->model->updateMetadata($id, $themeId, $title, $description);
                         }
-                        $_SESSION['success'] = "La ressource a été modifiée avec succès.";
+                        setFlash('success', "La ressource a été modifiée avec succès.");
                         header("Location: /index.php?page=resources");
                         exit;
                     } catch (\PDOException $e) {
@@ -266,7 +266,7 @@ class ResourceController {
     public function delete() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!verify_csrf()) {
-                $_SESSION['error'] = "Jeton de sécurité invalide ou expiré.";
+                setFlash('error', "Jeton de sécurité invalide ou expiré.");
             } else {
                 $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
                 if ($id) {
@@ -282,10 +282,10 @@ class ResourceController {
                             if (file_exists($filePath)) {
                                 @unlink($filePath);
                             }
-                            $_SESSION['success'] = "La ressource a été supprimée avec succès.";
+                            setFlash('success', "La ressource a été supprimée avec succès.");
                         }
                     } catch (\PDOException $e) {
-                        $_SESSION['error'] = "Erreur lors de la suppression dans la base de données.";
+                        setFlash('error', "Erreur lors de la suppression dans la base de données.");
                     }
                 }
             }

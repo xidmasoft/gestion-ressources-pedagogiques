@@ -36,8 +36,8 @@ class DisciplineController {
                 $errors[] = "Jeton de sécurité invalide ou expiré.";
             }
 
-            $name = trim($_POST['name'] ?? '');
-            $description = trim($_POST['description'] ?? '');
+            $name = isset($_POST['name']) ? trim($_POST['name']) : $name;
+            $description = isset($_POST['description']) ? trim($_POST['description']) : $description;
 
             if (empty($errors) && empty($name)) {
                 $errors[] = "Le nom de la discipline est obligatoire.";
@@ -48,7 +48,7 @@ class DisciplineController {
             if (empty($errors)) {
                 try {
                     $this->model->create($name, $description);
-                    $_SESSION['success'] = "La discipline a été ajoutée avec succès.";
+                    setFlash('success', "La discipline a été ajoutée avec succès.");
                     header("Location: /index.php?page=disciplines");
                     exit;
                 } catch (\PDOException $e) {
@@ -84,8 +84,8 @@ class DisciplineController {
                 $errors[] = "Jeton de sécurité invalide ou expiré.";
             }
 
-            $name = trim($_POST['name'] ?? '');
-            $description = trim($_POST['description'] ?? '');
+            $name = isset($_POST['name']) ? trim($_POST['name']) : $name;
+            $description = isset($_POST['description']) ? trim($_POST['description']) : $description;
 
             if (empty($errors)) {
                 if (empty($name)) {
@@ -98,7 +98,7 @@ class DisciplineController {
             if (empty($errors)) {
                 try {
                     $this->model->update($id, $name, $description);
-                    $_SESSION['success'] = "La discipline a été modifiée avec succès.";
+                    setFlash('success', "La discipline a été modifiée avec succès.");
                     header("Location: /index.php?page=disciplines");
                     exit;
                 } catch (\PDOException $e) {
@@ -113,7 +113,7 @@ class DisciplineController {
     public function delete() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!verify_csrf()) {
-                $_SESSION['error'] = "Jeton de sécurité invalide ou expiré.";
+                setFlash('error', "Jeton de sécurité invalide ou expiré.");
             } else {
                 $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
                 if ($id) {
@@ -121,13 +121,13 @@ class DisciplineController {
                         $discipline = $this->model->getById($id);
                         if ($discipline) {
                             $this->model->delete($id);
-                            $_SESSION['success'] = "La discipline a été supprimée avec succès.";
+                            setFlash('success', "La discipline a été supprimée avec succès.");
                         }
                     } catch (\PDOException $e) {
-                        if ($e->getCode() == 23000) {
-                            $_SESSION['error'] = "Suppression impossible : cette discipline contient des thèmes. Veuillez d'abord supprimer ou déplacer ses thèmes.";
+                        if ($e->getCode() == 23000 && isset($e->errorInfo[1]) && $e->errorInfo[1] == 1451) {
+                            setFlash('error', "Impossible de supprimer cette discipline : des thèmes y sont encore associés.");
                         } else {
-                            $_SESSION['error'] = "Erreur lors de la suppression dans la base de données.";
+                            setFlash('error', "Erreur lors de la suppression dans la base de données.");
                         }
                     }
                 }
