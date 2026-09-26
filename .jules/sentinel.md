@@ -1,0 +1,4 @@
+## 2024-10-25 - [PHP 8 hash_equals TypeError DoS]
+**Vulnerability:** The `hash_equals()` function in PHP 8+ enforces strict typing and throws a `TypeError` if an array is passed instead of a string. `$_POST` variables can easily be manipulated by an attacker to be arrays (e.g., `csrf_token[]=foo`). Because `verify_csrf()` did not validate the input types before calling `hash_equals()`, this allowed for an unhandled exception and a potential Denial of Service (DoS) attack.
+**Learning:** Type enforcement in PHP 8+ functions introduces unexpected exceptions for malformed inputs that used to only trigger warnings. All user inputs mapping to strict type parameters must be explicitly validated.
+**Prevention:** Always use `is_string()` (or similar type-checking functions) to validate user input arrays like `$_POST` and `$_GET` before passing them to strict built-in PHP functions, particularly security-sensitive ones like `hash_equals()`.
