@@ -1,0 +1,4 @@
+## 2024-11-21 - [Fix TypeError DoS in hash_equals]
+**Vulnerability:** A `TypeError` occurs when arrays or objects are passed via `$_POST` variables (e.g. `csrf_token[]=value`) to strictly-typed PHP 8+ functions like `hash_equals()`. Since PHP does not implicitly cast these arrays to strings, an uncaught exception is thrown which leads to a potential Denial of Service (DoS).
+**Learning:** We must not trust the type of data coming from superglobals like `$_POST` or `$_GET`. Input must be validated for type correctness in addition to its content or emptiness.
+**Prevention:** Always explicitly validate the types of user inputs (e.g., using `is_string()`) before passing them to strictly-typed native functions.
