@@ -1,0 +1,4 @@
+## 2024-05-18 - [TypeError DoS via Array Input]
+**Vulnerability:** Unauthenticated endpoints like login and CSRF verification used strict PHP 8+ functions (`trim()`, `hash_equals()`, `password_verify()`) without verifying that user inputs were strings. This could lead to a Denial of Service (DoS) by sending arrays (e.g., `email[]=1`), causing the application to throw an unhandled `TypeError` and crash the request process.
+**Learning:** In PHP 8+, passing incorrect data types to strict internal functions no longer returns `false` or null, but throws a fatal `TypeError`. When dealing with user inputs (`$_POST`, `$_GET`), we cannot assume the data type.
+**Prevention:** Always validate that external inputs are of the expected type (e.g., using `is_string()`) before passing them to type-strict PHP functions, especially on unauthenticated routes.
