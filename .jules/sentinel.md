@@ -1,0 +1,4 @@
+## 2024-03-24 - [PHP 8+ TypeError DoS Vulnerability via Array Inputs]
+**Vulnerability:** Core functions `h()` (using `htmlspecialchars()`) and `verify_csrf()` (using `hash_equals()`), along with the authentication controller (using `trim()` and `password_verify()`), were directly accepting user inputs (e.g., from `$_POST`) without ensuring they were strings. In PHP 8+, passing an array to these functions throws a fatal `TypeError`, crashing the application and leading to a Denial of Service (DoS).
+**Learning:** Even simple functions that expect strings can be exploited to crash the application in PHP 8+ if they receive an unexpected type, like an array, from malicious requests (e.g., `email[]=invalid`).
+**Prevention:** Always explicitly validate that expected string inputs are indeed strings (e.g., using `is_string()`) before passing them to strict built-in functions.
