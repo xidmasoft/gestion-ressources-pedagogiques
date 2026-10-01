@@ -1,0 +1,4 @@
+## 2024-05-15 - [TypeError DoS via PHP 8 Strict Types]
+**Vulnerability:** Unauthenticated endpoints receiving user inputs via arrays instead of strings trigger unhandled TypeErrors when using strict PHP 8 functions (e.g. trim(), hash_equals(), password_verify()). Since trim doesn't handle arrays, it throws a Fatal TypeError, resulting in a Denial of Service (HTTP 500) that can crash the PHP worker or exhaust resources if hit repeatedly.
+**Learning:** $_POST and $_GET data structures can be manipulated by appending [] to the parameter names in the request. In PHP 8+, many core functions are strictly typed and will throw exceptions instead of issuing warnings or returning null when receiving arrays, making previously minor bugs into DoS vectors.
+**Prevention:** Always explicitly check parameter types (is_string(), is_scalar()) or cast explicitly before feeding untrusted user input into strict typed functions like trim, hash_equals, or password_verify.
