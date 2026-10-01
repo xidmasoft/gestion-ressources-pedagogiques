@@ -37,5 +37,9 @@ function verify_csrf(): bool {
         return false;
     }
 
+    if (!is_string($sessionToken) || !is_string($postToken)) {
+        return false;
+    }
+
     return hash_equals($sessionToken, $postToken);
 }
