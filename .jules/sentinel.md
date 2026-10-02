@@ -1,0 +1,4 @@
+## 2024-10-02 - PHP 8 strict typing DoS vulnerability
+**Vulnerability:** The application was vulnerable to a Denial of Service (DoS) attack due to PHP 8's strict typing. Functions like `trim()`, `htmlspecialchars()`, and `hash_equals()` throw a fatal `TypeError` if an array is passed instead of a scalar/string value. Attackers can exploit this by submitting array parameters in forms (e.g., `email[]=` or `csrf_token[]=`).
+**Learning:** In PHP 8+, relying on implicit type coercion is dangerous for input handling. Standard string functions will crash the application instead of returning a warning or `null` when given an array.
+**Prevention:** Always explicitly validate the types of user inputs (e.g., using `is_string()` or `is_scalar()`) before passing them to strict PHP 8+ functions to prevent TypeErrors.

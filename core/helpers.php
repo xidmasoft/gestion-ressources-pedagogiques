@@ -4,14 +4,14 @@
 /**
  * Échappe les caractères spéciaux en entités HTML pour prévenir les failles XSS.
  *
- * @param string|null $string La chaîne à échapper.
+ * @param mixed $string La chaîne à échapper.
  * @return string La chaîne échappée.
  */
-function h(?string $string): string {
-    if ($string === null) {
+function h(mixed $string): string {
+    if ($string === null || !is_scalar($string)) {
         return '';
     }
-    return htmlspecialchars($string, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    return htmlspecialchars((string) $string, ENT_QUOTES | ENT_HTML5, 'UTF-8');
 }
 
 /**
@@ -33,7 +33,7 @@ function verify_csrf(): bool {
     $sessionToken = $_SESSION['csrf_token'] ?? '';
     $postToken = $_POST['csrf_token'] ?? '';
 
-    if (empty($sessionToken) || empty($postToken)) {
+    if (empty($sessionToken) || empty($postToken) || !is_string($sessionToken) || !is_string($postToken)) {
         return false;
     }
 
