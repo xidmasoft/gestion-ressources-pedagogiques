@@ -27,12 +27,18 @@ class AuthController {
             if (!verify_csrf()) {
                 $errors[] = "Requête invalide ou expirée.";
             } else {
-                $email = trim($_POST['email'] ?? '');
-                $password = $_POST['password'] ?? '';
+                $emailPost = $_POST['email'] ?? '';
+                $passwordPost = $_POST['password'] ?? '';
 
-                if (empty($email) || empty($password)) {
-                    $errors[] = "Veuillez remplir tous les champs.";
-                } elseif ($this->userModel) {
+                if (!is_string($emailPost) || !is_string($passwordPost)) {
+                    $errors[] = "Données invalides.";
+                } else {
+                    $email = trim($emailPost);
+                    $password = $passwordPost;
+
+                    if (empty($email) || empty($password)) {
+                        $errors[] = "Veuillez remplir tous les champs.";
+                    } elseif ($this->userModel) {
                     // Check brute force limits
                     $attempts = $this->userModel->getRecentFailedAttempts($email, 5);
                     if ($attempts >= 5) {
@@ -57,6 +63,7 @@ class AuthController {
                     }
                 } else {
                     $errors[] = "Erreur de connexion à la base de données.";
+                }
                 }
             }
         }
