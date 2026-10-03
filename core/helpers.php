@@ -33,7 +33,7 @@ function verify_csrf(): bool {
     $sessionToken = $_SESSION['csrf_token'] ?? '';
     $postToken = $_POST['csrf_token'] ?? '';
 
-    if (empty($sessionToken) || empty($postToken)) {
+    if (empty($sessionToken) || empty($postToken) || !is_string($sessionToken) || !is_string($postToken)) {
         return false;
     }
 
