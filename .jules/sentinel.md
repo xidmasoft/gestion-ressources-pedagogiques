@@ -1,0 +1,4 @@
+## 2024-10-05 - PHP 8+ TypeError DoS Vulnerability
+**Vulnerability:** Passing arrays via superglobals (like `$_POST`) to strict PHP 8+ functions (e.g., `hash_equals()`, `trim()`, `password_verify()`) causes a fatal `TypeError` which halts execution. This can be exploited to perform a Denial of Service (DoS) attack, especially in authentication or CSRF verification logic.
+**Learning:** PHP 8+ introduced strict type requirements for many internal functions. When input from user-controlled sources like `$_POST` or `$_GET` is expected to be a string but an array is supplied, it causes a crash instead of a silent failure or warning.
+**Prevention:** Always explicitly validate the types of user inputs from superglobals using functions like `is_string()` or `is_scalar()` before passing them to strict PHP functions.
