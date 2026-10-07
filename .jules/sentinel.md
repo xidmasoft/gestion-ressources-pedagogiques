@@ -1,0 +1,4 @@
+## 2026-10-07 - [Fix DoS via TypeError in PHP 8+ strict functions]
+**Vulnerability:** A Denial of Service (DoS) vulnerability existed due to missing type checks before passing user input to strict PHP 8+ functions like `trim()`, `password_verify()`, and `hash_equals()`. Attackers could inject arrays (e.g., `email[]=a` or `csrf_token[]=123`) in POST requests, causing a fatal `TypeError` and crashing the script.
+**Learning:** In PHP 8+, many internal functions that previously emitted a warning and returned `null` or `false` when given an array now throw a fatal `TypeError`. Relying solely on `empty()` is insufficient because `empty(['a'])` evaluates to `false`.
+**Prevention:** Always explicitly validate the types of user inputs (e.g., using `is_string()`) before passing them to strict PHP functions, especially when handling data directly from superglobals like `$_POST` or `$_GET`.

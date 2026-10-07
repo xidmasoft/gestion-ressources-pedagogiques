@@ -27,36 +27,43 @@ class AuthController {
             if (!verify_csrf()) {
                 $errors[] = "Requête invalide ou expirée.";
             } else {
-                $email = trim($_POST['email'] ?? '');
-                $password = $_POST['password'] ?? '';
+                $emailRaw = $_POST['email'] ?? '';
+                $passwordRaw = $_POST['password'] ?? '';
 
-                if (empty($email) || empty($password)) {
-                    $errors[] = "Veuillez remplir tous les champs.";
-                } elseif ($this->userModel) {
-                    // Check brute force limits
-                    $attempts = $this->userModel->getRecentFailedAttempts($email, 5);
-                    if ($attempts >= 5) {
-                        $errors[] = "Email ou mot de passe incorrect."; // Generic message, but actually rate limited
-                    } else {
-                        $user = $this->userModel->getByEmail($email);
-                        if ($user && $user['status'] === 'active' && password_verify($password, $user['password_hash'])) {
-                            // Success
-                            $this->userModel->clearFailedAttempts($email);
-
-                            session_regenerate_id(true);
-                            $_SESSION['user_id'] = $user['id'];
-                            $_SESSION['user_name'] = $user['name'];
-                            $_SESSION['role'] = $user['role'];
-
-                            header("Location: /index.php?page=dashboard");
-                            die();
-                        } else {
-                            $this->userModel->logFailedAttempt($email);
-                            $errors[] = "Email ou mot de passe incorrect.";
-                        }
-                    }
+                if (!is_string($emailRaw) || !is_string($passwordRaw)) {
+                    $errors[] = "Format de données invalide.";
                 } else {
-                    $errors[] = "Erreur de connexion à la base de données.";
+                    $email = trim($emailRaw);
+                    $password = $passwordRaw;
+
+                    if (empty($email) || empty($password)) {
+                        $errors[] = "Veuillez remplir tous les champs.";
+                    } elseif ($this->userModel) {
+                        // Check brute force limits
+                        $attempts = $this->userModel->getRecentFailedAttempts($email, 5);
+                        if ($attempts >= 5) {
+                            $errors[] = "Email ou mot de passe incorrect."; // Generic message, but actually rate limited
+                        } else {
+                            $user = $this->userModel->getByEmail($email);
+                            if ($user && $user['status'] === 'active' && password_verify($password, $user['password_hash'])) {
+                                // Success
+                                $this->userModel->clearFailedAttempts($email);
+
+                                session_regenerate_id(true);
+                                $_SESSION['user_id'] = $user['id'];
+                                $_SESSION['user_name'] = $user['name'];
+                                $_SESSION['role'] = $user['role'];
+
+                                header("Location: /index.php?page=dashboard");
+                                die();
+                            } else {
+                                $this->userModel->logFailedAttempt($email);
+                                $errors[] = "Email ou mot de passe incorrect.";
+                            }
+                        }
+                    } else {
+                        $errors[] = "Erreur de connexion à la base de données.";
+                    }
                 }
             }
         }
