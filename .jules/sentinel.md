@@ -1,0 +1,4 @@
+## 2024-05-15 - [TypeError Denial of Service in verify_csrf]
+**Vulnerability:** Type confusion in CSRF verification allows Denial of Service. In PHP 8+, passing an array instead of a string (e.g., via `$_POST['csrf_token'][] = 1`) to functions like `hash_equals` causes a `TypeError`. Since this error is typically uncaught, it crashes the script, leading to a potential DoS condition if triggered on a widely used endpoint (like login/logout).
+**Learning:** Strict typing in PHP 8+ introduces new vulnerability vectors if raw user input (`$_POST`, `$_GET`) is passed directly into typed functions without prior type validation. We cannot assume `$_POST['field']` is always a string.
+**Prevention:** Always validate the type of user input explicitly (e.g., using `is_string()`, `is_scalar()`) before passing it to strict PHP functions such as `hash_equals()`, `password_verify()`, `htmlspecialchars()`, or `trim()`.
