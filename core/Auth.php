@@ -36,7 +36,9 @@ class Auth {
         self::requireLogin();
         if (!self::isAdmin()) {
             http_response_code(403);
-            die("Accès refusé. Privilèges insuffisants.");
+            http_response_code(403);
+            require_once __DIR__ . '/../views/errors/403.php';
+            exit;
         }
     }
 }

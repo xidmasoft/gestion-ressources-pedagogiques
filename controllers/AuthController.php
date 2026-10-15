@@ -27,8 +27,8 @@ class AuthController {
             if (!verify_csrf()) {
                 $errors[] = "Requête invalide ou expirée.";
             } else {
-                $email = trim($_POST['email'] ?? '');
-                $password = $_POST['password'] ?? '';
+                $email = isset($_POST['email']) ? trim($_POST['email']) : $email;
+                $password = isset($_POST['password']) ? $_POST['password'] : $password;
 
                 if (empty($email) || empty($password)) {
                     $errors[] = "Veuillez remplir tous les champs.";
@@ -82,6 +82,8 @@ class AuthController {
 
         // Si GET ou pas de CSRF, on refuse ou on redirige
         http_response_code(403);
-        die("Déconnexion non autorisée.");
+        http_response_code(403);
+            require_once __DIR__ . '/../views/errors/403.php';
+            exit;
     }
 }

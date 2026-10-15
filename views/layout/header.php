@@ -50,3 +50,4 @@
         </div>
     </nav>
     <main class="container my-5 flex-grow-1">
+        <?php require_once __DIR__ . '/messages.php'; ?>

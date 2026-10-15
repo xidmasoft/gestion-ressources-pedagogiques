@@ -19,7 +19,39 @@ class Resource {
         return $stmt->fetchAll();
     }
 
-    public function search($query, $disciplineId, $themeId) {
+        public function countSearch($query, $disciplineId, $themeId) {
+        $sql = "SELECT COUNT(r.id)
+                FROM resources r
+                JOIN themes t ON r.theme_id = t.id
+                JOIN disciplines d ON t.discipline_id = d.id
+                WHERE 1=1";
+
+        $params = [];
+
+        if (!empty($query)) {
+            $sql .= " AND (r.title LIKE :query
+                        OR r.description LIKE :query
+                        OR t.name LIKE :query
+                        OR d.name LIKE :query)";
+            $params['query'] = '%' . $query . '%';
+        }
+
+        if (!empty($disciplineId)) {
+            $sql .= " AND d.id = :discipline_id";
+            $params['discipline_id'] = $disciplineId;
+        }
+
+        if (!empty($themeId)) {
+            $sql .= " AND t.id = :theme_id";
+            $params['theme_id'] = $themeId;
+        }
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function search($query, $disciplineId, $themeId, $limit = 20, $offset = 0) {
         $sql = "SELECT r.*, t.name as theme_name, d.name as discipline_name
                 FROM resources r
                 JOIN themes t ON r.theme_id = t.id
@@ -46,10 +78,15 @@ class Resource {
             $params['theme_id'] = $themeId;
         }
 
-        $sql .= " ORDER BY d.name ASC, t.name ASC, r.title ASC";
+        $sql .= " ORDER BY d.name ASC, t.name ASC, r.title ASC LIMIT :limit OFFSET :offset";
 
         $stmt = $this->pdo->prepare($sql);
-        $stmt->execute($params);
+        foreach ($params as $key => $value) {
+            $stmt->bindValue(":$key", $value);
+        }
+        $stmt->bindValue(':limit', (int) $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', (int) $offset, PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 

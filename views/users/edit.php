@@ -39,15 +39,15 @@
                         <div class="col-md-6 mb-3">
                             <label for="role" class="form-label">Rôle</label>
                             <select class="form-select" id="role" name="role" required>
-                                <option value="user" <?= ($role === 'user') ? 'selected' : '' ?>>Utilisateur</option>
-                                <option value="admin" <?= ($role === 'admin') ? 'selected' : '' ?>>Administrateur</option>
+                                <option value="user" <?= (isset($role) && $role === 'user') ? 'selected' : '' ?>>Utilisateur</option>
+                                <option value="admin" <?= (isset($role) && $role === 'admin') ? 'selected' : '' ?>>Administrateur</option>
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label for="status" class="form-label">Statut</label>
                             <select class="form-select" id="status" name="status" required>
-                                <option value="active" <?= ($status === 'active') ? 'selected' : '' ?>>Actif</option>
-                                <option value="locked" <?= ($status === 'locked') ? 'selected' : '' ?>>Verrouillé</option>
+                                <option value="active" <?= (isset($status) && $status === 'active') ? 'selected' : '' ?>>Actif</option>
+                                <option value="locked" <?= (isset($status) && $status === 'locked') ? 'selected' : '' ?>>Verrouillé</option>
                             </select>
                         </div>
                     </div>
